@@ -382,6 +382,15 @@ trait LfmHelpers
             return true;
         }
 
+        $user = auth()->user();
+        if (is_callable(config('lfm.allow_share_folder_acl'))) {
+            return call_user_func(config('lfm.allow_share_folder_acl'), $user);
+        } 
+        elseif (class_exists(config('lfm.allow_share_folder_acl'))) {
+            $config_handler = config('lfm.allow_share_folder_acl');
+            return app()->make($config_handler)->shareFolderAcl($user);
+        }
+
         return config('lfm.allow_share_folder') === true;
     }
 
